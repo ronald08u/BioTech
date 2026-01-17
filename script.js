@@ -1,55 +1,63 @@
+// Navegación entre pestañas
 function openTab(event, tabId, title) {
-    // 1. Ocultar todos los contenidos de pestañas
     const contents = document.getElementsByClassName("tab-content");
     for (let i = 0; i < contents.length; i++) {
         contents[i].classList.remove("active");
     }
 
-    // 2. Quitar la clase 'active' de todos los botones
     const navItems = document.getElementsByClassName("nav-item");
     for (let i = 0; i < navItems.length; i++) {
         navItems[i].classList.remove("active");
     }
 
-    // 3. Mostrar la pestaña actual y añadir 'active' al botón
     document.getElementById(tabId).classList.add("active");
     event.currentTarget.classList.add("active");
-
-    // 4. Cambiar el título del header
     document.getElementById("header-title").innerText = title;
 
-    // Feedback táctil (opcional para móviles)
-    if (window.navigator.vibrate) {
-        window.navigator.vibrate(10);
-    }
+    // Vibración ligera al tocar (solo en dispositivos compatibles)
+    if (window.navigator.vibrate) window.navigator.vibrate(5);
 }
 
-function activarBusqueda() {
-    let query = prompt("¿Qué deseas buscar?");
-    if(query) alert("Buscando: " + query);
-}
-
+// Lógica de Chatbot
 function sendMessage() {
     const input = document.getElementById('user-input');
     const chatBox = document.getElementById('chat-box');
 
-    if (input.value.trim() !== "") {
-        // Mensaje del usuario
-        const userDiv = document.createElement('div');
-        userDiv.className = 'msg user';
-        userDiv.textContent = input.value;
-        chatBox.appendChild(userDiv);
+    if (input.value.trim() === "") return;
 
-        // Respuesta simulada del Bot
-        setTimeout(() => {
-            const botDiv = document.createElement('div');
-            botDiv.className = 'msg bot';
-            botDiv.textContent = "Estoy procesando tu solicitud...";
-            chatBox.appendChild(botDiv);
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }, 600);
+    // Mensaje de Usuario
+    const userDiv = document.createElement('div');
+    userDiv.className = 'msg user';
+    userDiv.textContent = input.value;
+    chatBox.appendChild(userDiv);
 
-        input.value = "";
+    const texto = input.value.toLowerCase();
+    input.value = "";
+
+    // Respuesta Automática
+    setTimeout(() => {
+        const botDiv = document.createElement('div');
+        botDiv.className = 'msg bot';
+        
+        if (texto.includes("hola")) {
+            botDiv.textContent = "¡Hola! ¿Cómo puedo ayudarte hoy?";
+        } else if (texto.includes("perfil")) {
+            botDiv.textContent = "Puedes ver tu perfil en la cuarta pestaña del menú inferior.";
+        } else {
+            botDiv.textContent = "Entiendo. ¿Podrías darme más detalles sobre eso?";
+        }
+
+        chatBox.appendChild(botDiv);
         chatBox.scrollTop = chatBox.scrollHeight;
+    }, 700);
+
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+// Buscador superior
+function abrirBuscador() {
+    const busqueda = prompt("¿Qué estás buscando?");
+    if (busqueda) {
+        alert("Buscando '" + busqueda + "' en la aplicación...");
     }
 }
