@@ -3,79 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi App Móvil</title>
+    <title>Healthcare</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="manifest" href="manifest.json">
-<script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js')
-      .then(reg => console.log('Service Worker registrado', reg))
-      .catch(err => console.warn('Error al registrar SW', err));
-  }
-</script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
 
-   <header class="app-header">
-    <div class="header-content">
-        <h1 id="header-title">Inicio</h1>
-        <button class="search-trigger" onclick="activarBusqueda()">
-            <span class="material-icons">search</span>
-        </button>
-    </div>
-</header>
-
-<main class="content">
-    <section id="home" class="tab-content active">
-        <div class="card">
-            <h3>Bienvenido de nuevo</h3>
-            <p>Explora tus funciones favoritas.</p>
+    <header class="app-header">
+        <div class="header-container">
+            <h1 id="header-title">Inicio</h1>
+            <button class="icon-btn" onclick="abrirBuscador()">
+                <span class="material-icons">search</span>
+            </button>
         </div>
-    </section>
+    </header>
 
-    <section id="chatbot" class="tab-content">
-        <div class="chat-container">
-            <div class="chat-messages" id="chat-box">
-                <div class="msg bot">¡Hola! Soy tu asistente IA. ¿En qué puedo ayudarte hoy?</div>
+    <main class="content">
+        <section id="home" class="tab-content active">
+            <div class="card">
+                <h2>Hola de nuevo</h2>
+                <p>Bienvenido a Healthcare.</p>
             </div>
-            <div class="chat-input-area">
-                <input type="text" id="user-input" placeholder="Escribe un mensaje...">
-                <button onclick="sendMessage()"><span class="material-icons">send</span></button>
-            </div>
-        </div>
-    </section>
+        </section>
 
+        <section id="chatbot" class="tab-content">
+            <div class="chat-wrapper">
+                <div class="chat-messages" id="chat-box">
+                    <div class="msg bot">¡Hola! Soy tu asistente health. ¿Cómo puedo ayudarte hoy?</div>
+                </div>
+                <div class="chat-input-area">
+                    <input type="text" id="user-input" placeholder="Escribe un mensaje...">
+                    <button onclick="sendMessage()" class="send-btn">
+                        <span class="material-icons">send</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section id="notifications" class="tab-content">
+            <div class="card">
+                <h2>Notificaciones</h2>
+                <p>No tienes alertas pendientes.</p>
+            </div>
+        </section>
+
+        <section id="profile" class="tab-content">
+            <div class="profile-section">
+                <img src="https://ui-avatars.com/api/?name=Usuario&background=6366f1&color=fff" class="avatar">
+                <h2>Mi Perfil</h2>
+                <span class="badge">Usuario Activo</span>
+            </div>
+        </section>
     </main>
 
-<nav class="bottom-nav">
-    <button class="nav-item active" onclick="openTab(event, 'home', 'Inicio')">
-        <span class="material-icons">home</span>
-        <span class="nav-text">Inicio</span>
-    </button>
-    <button class="nav-item" onclick="openTab(event, 'chatbot', 'Asistente')">
-        <span class="material-icons">smart_toy</span> <span class="nav-text">Chat</span>
-    </button>
+    <nav class="bottom-nav">
+        <button class="nav-item active" onclick="openTab(event, 'home', 'Inicio')">
+            <span class="material-icons">home</span>
+            <span class="nav-text">Inicio</span>
+        </button>
+        <button class="nav-item" onclick="openTab(event, 'chatbot', 'Asistente IA')">
+            <span class="material-icons">smart_toy</span>
+            <span class="nav-text">Chat</span>
+        </button>
+        <button class="nav-item" onclick="openTab(event, 'notifications', 'Alertas')">
+            <span class="material-icons">notifications</span>
+            <span class="nav-text">Notis</span>
+        </button>
+        <button class="nav-item" onclick="openTab(event, 'profile', 'Mi Cuenta')">
+            <span class="material-icons">person</span>
+            <span class="nav-text">Perfil</span>
+        </button>
     </nav>
-<section id="home" class="tab-content active">
-    <div class="card">
-        <h3>Actividad Reciente</h3>
-        <p style="color: var(--text-muted);">Tienes 3 tareas pendientes para hoy.</p>
-        <button class="btn-primary">Ver tareas</button>
-    </div>
-</section>
 
-<section id="profile" class="tab-content">
-    <div class="profile-header">
-        <img src="https://ui-avatars.com/api/?name=Usuario+Demo&background=6366f1&color=fff" alt="Avatar" class="avatar-large">
-        <h2>Juan Pérez</h2>
-        <span class="badge">Cuenta Premium</span>
-    </div>
-</section>
     <script src="script.js"></script>
+    <script>
+        // Registro del Service Worker para que sea instalable
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js')
+                .then(reg => console.log('SW registrado correctamente'))
+                .catch(err => console.log('Error al registrar SW', err));
+        }
+    </script>
 </body>
 </html>
-
-
-
-
