@@ -1,7 +1,7 @@
 {
   "name": "Mi Aplicación Móvil",
   "short_name": "MiApp",
-  "start_url": "index.html",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#2c3e50",
