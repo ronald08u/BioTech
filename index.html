@@ -1,11 +1,62 @@
 <!DOCTYPE html>
 <html lang="es">
-    <head>
-        <title>Matrix</title>
-        <link rel="stylesheet" href="style.css">
-    </head>
-    <body>
-        <canvas id="matrix">Reinicia la página</canvas>
-        <script src="efectomatrix.js"></script>
-    </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi App Móvil</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+
+    <header class="app-header">
+        <h1 id="header-title">Inicio</h1>
+    </header>
+
+    <main class="content">
+        <section id="home" class="tab-content active">
+            <h2>Bienvenido</h2>
+            <p>Esta es la pestaña de inicio de tu aplicación móvil.</p>
+        </section>
+
+        <section id="search" class="tab-content">
+            <h2>Buscar</h2>
+            <input type="text" placeholder="¿Qué buscas?" class="search-bar">
+        </section>
+
+        <section id="notifications" class="tab-content">
+            <h2>Notificaciones</h2>
+            <p>No tienes notificaciones nuevas.</p>
+        </section>
+
+        <section id="profile" class="tab-content">
+            <h2>Mi Perfil</h2>
+            <div class="profile-card">
+                <div class="avatar"></div>
+                <p>Usuario Demo</p>
+            </div>
+        </section>
+    </main>
+
+    <nav class="bottom-nav">
+        <button class="nav-item active" onclick="openTab(event, 'home', 'Inicio')">
+            <span class="material-icons">home</span>
+            <span class="nav-text">Inicio</span>
+        </button>
+        <button class="nav-item" onclick="openTab(event, 'search', 'Buscar')">
+            <span class="material-icons">search</span>
+            <span class="nav-text">Buscar</span>
+        </button>
+        <button class="nav-item" onclick="openTab(event, 'notifications', 'Alertas')">
+            <span class="material-icons">notifications</span>
+            <span class="nav-text">Notis</span>
+        </button>
+        <button class="nav-item" onclick="openTab(event, 'profile', 'Perfil')">
+            <span class="material-icons">person</span>
+            <span class="nav-text">Perfil</span>
+        </button>
+    </nav>
+
+    <script src="script.js"></script>
+</body>
 </html>
