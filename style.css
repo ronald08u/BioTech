@@ -168,3 +168,62 @@ body {
     margin-bottom: 10px;
     border: 3px solid var(--primary);
 }
+
+/* Posicionamiento del buscador en el Header */
+.header-content {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.search-trigger {
+    background: none;
+    border: none;
+    color: var(--text-main);
+    cursor: pointer;
+}
+
+/* Interfaz del Chatbot */
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 200px); /* Ajuste para que quepa entre header y nav */
+    background: var(--bg-card);
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.chat-messages {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.msg {
+    padding: 10px 15px;
+    border-radius: 15px;
+    max-width: 80%;
+    font-size: 14px;
+}
+
+.bot { background: #e2e8f0; align-self: flex-start; }
+.user { background: var(--primary); color: white; align-self: flex-end; }
+
+.chat-input-area {
+    padding: 10px;
+    display: flex;
+    gap: 10px;
+    border-top: 1px solid #eee;
+}
+
+.chat-input-area input {
+    flex: 1;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    padding: 8px 15px;
+}
