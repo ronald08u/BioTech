@@ -24,3 +24,32 @@ function openTab(event, tabId, title) {
     }
 }
 
+function activarBusqueda() {
+    let query = prompt("¿Qué deseas buscar?");
+    if(query) alert("Buscando: " + query);
+}
+
+function sendMessage() {
+    const input = document.getElementById('user-input');
+    const chatBox = document.getElementById('chat-box');
+
+    if (input.value.trim() !== "") {
+        // Mensaje del usuario
+        const userDiv = document.createElement('div');
+        userDiv.className = 'msg user';
+        userDiv.textContent = input.value;
+        chatBox.appendChild(userDiv);
+
+        // Respuesta simulada del Bot
+        setTimeout(() => {
+            const botDiv = document.createElement('div');
+            botDiv.className = 'msg bot';
+            botDiv.textContent = "Estoy procesando tu solicitud...";
+            chatBox.appendChild(botDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }, 600);
+
+        input.value = "";
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+}
