@@ -1,6 +1,3 @@
-// Gemini AI Configuration
-const GEMINI_API_KEY = 'AIzaSyA_dS6938TCo8vd5DGRde0lDH4Wk8cHOSc';
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
 
 // Doctor profiles data
 const doctorProfiles = {
@@ -359,9 +356,25 @@ window.submitComment = async function(postId) {
 };
 
 // Load AI-generated comments
-async function loadAIComments(post) {
-    const postId = post.dataset.postId;
-    const commentsList = document.getElementById(`comments-list-${postId}`);
+async function getGeminiResponse(userMessage) {
+    const response = await fetch("https://cardiocare-3wfi.onrender.com/api/chat", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            mensaje: userMessage
+        })
+    });
+
+    if (!response.ok) {
+        throw new Error("Error al conectar con el backend");
+    }
+
+    const data = await response.json();
+    return data.respuesta;
+}
+;
     
     // Comentarios preestablecidos de Cardi
     const cardiComments = [
