@@ -1,63 +1,61 @@
-// Navegación entre pestañas
-function openTab(event, tabId, title) {
-    const contents = document.getElementsByClassName("tab-content");
-    for (let i = 0; i < contents.length; i++) {
-        contents[i].classList.remove("active");
+/*********************************
+ * SCRIPT PRINCIPAL – SIN UI
+ * Envía comentarios al backend
+ * y registra respuestas de la IA
+ *********************************/
+
+// ===============================
+// CONFIGURACIÓN
+// ===============================
+const API_URL = "https://TU_APP.onrender.com/api/chat";
+// ⬆️ cambia TU_APP por tu dominio real en Render
+
+// ===============================
+// FUNCIÓN PARA ENVIAR COMENTARIOS
+// ===============================
+async function enviarComentario(comentario) {
+  if (!comentario || comentario.trim() === "") {
+    console.warn("⚠️ Comentario vacío");
+    return;
+  }
+
+  console.log("🗣️ Usuario:", comentario);
+
+  try {
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        message: comentario
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error("Error HTTP " + response.status);
     }
 
-    const navItems = document.getElementsByClassName("nav-item");
-    for (let i = 0; i < navItems.length; i++) {
-        navItems[i].classList.remove("active");
-    }
+    const data = await response.json();
 
-    document.getElementById(tabId).classList.add("active");
-    event.currentTarget.classList.add("active");
-    document.getElementById("header-title").innerText = title;
+    console.log("🤖 IA:", data.reply);
 
-    // Vibración ligera al tocar (solo en dispositivos compatibles)
-    if (window.navigator.vibrate) window.navigator.vibrate(5);
+    return {
+      comentario,
+      respuestaIA: data.reply,
+      timestamp: new Date().toISOString()
+    };
+
+  } catch (error) {
+    console.error("❌ Error al enviar comentario:", error);
+  }
 }
 
-// Lógica de Chatbot
-function sendMessage() {
-    const input = document.getElementById('user-input');
-    const chatBox = document.getElementById('chat-box');
+// ===============================
+// EJEMPLO DE USO (PRUEBA)
+// ===============================
+(async () => {
+  await enviarComentario("¿Cómo puedo cuidar mi corazón?");
+  await enviarComentario("¿Qué hábitos reducen el riesgo cardiovascular?");
+})();
 
-    if (input.value.trim() === "") return;
-
-    // Mensaje de Usuario
-    const userDiv = document.createElement('div');
-    userDiv.className = 'msg user';
-    userDiv.textContent = input.value;
-    chatBox.appendChild(userDiv);
-
-    const texto = input.value.toLowerCase();
-    input.value = "";
-
-    // Respuesta Automática
-    setTimeout(() => {
-        const botDiv = document.createElement('div');
-        botDiv.className = 'msg bot';
-        
-        if (texto.includes("hola")) {
-            botDiv.textContent = "¡Hola! ¿Cómo puedo ayudarte hoy?";
-        } else if (texto.includes("perfil")) {
-            botDiv.textContent = "Puedes ver tu perfil en la cuarta pestaña del menú inferior.";
-        } else {
-            botDiv.textContent = "Entiendo. ¿Podrías darme más detalles sobre eso?";
-        }
-
-        chatBox.appendChild(botDiv);
-        chatBox.scrollTop = chatBox.scrollHeight;
-    }, 700);
-
-    chatBox.scrollTop = chatBox.scrollHeight;
-}
-
-// Buscador superior
-function abrirBuscador() {
-    const busqueda = prompt("¿Qué estás buscando?");
-    if (busqueda) {
-        alert("Buscando '" + busqueda + "' en la aplicación...");
-    }
-}
