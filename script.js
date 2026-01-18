@@ -1,61 +1,60 @@
-/*********************************
- * SCRIPT PRINCIPAL – SIN UI
- * Envía comentarios al backend
- * y registra respuestas de la IA
- *********************************/
+const heartChatbot = document.getElementById("heartChatbot");
+const chatWindow = document.getElementById("chatWindow");
+const closeChat = document.getElementById("closeChat");
+const chatInput = document.getElementById("chatInput");
+const sendMessage = document.getElementById("sendMessage");
+const chatMessages = document.getElementById("chatMessages");
 
-// ===============================
-// CONFIGURACIÓN
-// ===============================
-const API_URL = "https://TU_APP.onrender.com/api/chat";
-// ⬆️ cambia TU_APP por tu dominio real en Render
+// abrir / cerrar
+heartChatbot.addEventListener("click", () => {
+  chatWindow.classList.toggle("active");
+});
 
-// ===============================
-// FUNCIÓN PARA ENVIAR COMENTARIOS
-// ===============================
-async function enviarComentario(comentario) {
-  if (!comentario || comentario.trim() === "") {
-    console.warn("⚠️ Comentario vacío");
-    return;
+closeChat.addEventListener("click", () => {
+  chatWindow.classList.remove("active");
+});
+
+// enviar
+sendMessage.addEventListener("click", sendChat);
+chatInput.addEventListener("keypress", e => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    sendChat();
   }
+});
 
-  console.log("🗣️ Usuario:", comentario);
+function addMessage(text, isUser) {
+  const div = document.createElement("div");
+  div.className = `chat-message ${isUser ? "user" : ""}`;
+  div.innerHTML = `<div class="message-bubble">${text}</div>`;
+  chatMessages.appendChild(div);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+  return div;
+}
+
+async function sendChat() {
+  const text = chatInput.value.trim();
+  if (!text) return;
+
+  addMessage(text, true);
+  chatInput.value = "";
+
+  const typing = addMessage("Escribiendo...", false);
 
   try {
-    const response = await fetch(API_URL, {
+    const res = await fetch("/api/chat", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        message: comentario
-      })
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: text })
     });
 
-    if (!response.ok) {
-      throw new Error("Error HTTP " + response.status);
-    }
-
-    const data = await response.json();
-
-    console.log("🤖 IA:", data.reply);
-
-    return {
-      comentario,
-      respuestaIA: data.reply,
-      timestamp: new Date().toISOString()
-    };
-
-  } catch (error) {
-    console.error("❌ Error al enviar comentario:", error);
+    const data = await res.json();
+    typing.remove();
+    addMessage(data.reply, false);
+  } catch (err) {
+    typing.remove();
+    addMessage("Error de conexión con el servidor", false);
   }
 }
 
-// ===============================
-// EJEMPLO DE USO (PRUEBA)
-// ===============================
-(async () => {
-  await enviarComentario("¿Cómo puedo cuidar mi corazón?");
-  await enviarComentario("¿Qué hábitos reducen el riesgo cardiovascular?");
-})();
 
