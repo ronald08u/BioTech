@@ -1,85 +1,47 @@
-import express from "express";
-import cors from "cors";
-import fetch from "node-fetch";
-import dotenv from "dotenv";
-
-dotenv.config();
+const express = require('express');
+const cors = require('cors');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
+require('dotenv').config();
 
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 3000;
 
+// Middleware
 app.use(cors());
 app.use(express.json());
+app.use(express.static('public'));
 
-app.post("/api/chat", async (req, res) => {
-    const userMessage = req.body.message;
+// Inicializar Gemini
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
 
-    if (!userMessage) {
-        return res.status(400).json({ error: "Mensaje vacío" });
-    }
-
-    const systemPrompt = `
-Eres un asistente especializado en salud cardiovascular llamado CardioAsistente.
-
-Reglas:
-1. Proporciona solo información general
-2. NO diagnostiques enfermedades
-3. Recomienda siempre consultar a un profesional
-4. Sé empático y claro
-5. Respuestas máximo 3–4 oraciones
-
-Si piden diagnóstico responde:
-"No puedo proporcionar diagnósticos médicos. Te recomiendo encarecidamente que consultes con un profesional de la salud."
-
-Mensaje del usuario: ${userMessage}
-`;
-
+// Endpoint del chat
+app.post('/api/chat', async (req, res) => {
     try {
-        const response = await fetch("https://cardio-backend.onrender.com/api/chat", {
-    method: "POST",
-    headers: {
-        "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-        message: userMessage
-    })
-});
-,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    contents: [
-                        {
-                            parts: [{ text: systemPrompt }]
-                        }
-                    ],
-                    generationConfig: {
-                        temperature: 0.7,
-                        maxOutputTokens: 300
-                    }
-                })
-            }
-        );
+        const { message } = req.body;
+        
+        if (!message) {
+            return res.status(400).json({ error: 'Mensaje requerido' });
+        }
 
-        const data = await response.json();
-
-        const reply =
-            data?.candidates?.[0]?.content?.parts?.[0]?.text ||
-            "No pude generar una respuesta en este momento.";
-
-        res.json({ reply });
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({
-            reply: "Error al conectar con el asistente."
+        const chat = model.startChat({
+            history: [],
+            generationConfig: {
+                maxOutputTokens: 1000,
+            },
         });
+
+        const result = await chat.sendMessage(message);
+        const response = await result.response;
+        const text = response.text();
+
+        res.json({ response: text });
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ error: 'Error al procesar la solicitud' });
     }
 });
 
 app.listen(PORT, () => {
-    console.log(`Servidor activo en http://localhost:${PORT}`);
+    console.log(`Servidor corriendo en puerto ${PORT}`);
 });
