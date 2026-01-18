@@ -1,101 +1,53 @@
-/*********************************
- * CARDIOASISTENTE TODO-EN-UNO
- * Frontend + Backend + Gemini
- *********************************/
-
 import express from "express";
 import fetch from "node-fetch";
 import cors from "cors";
 
 const app = express();
-const PORT = process.env.PORT || 3000;
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-
 app.use(cors());
 app.use(express.json());
+app.use(express.static("public"));
 
-// ===============================
-// FRONTEND INLINE
-// ===============================
-app.get("/", (req, res) => {
-  res.send(`
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <title>CardioAsistente IA</title>
-</head>
-<body>
-  <h2>🫀 CardioAsistente IA</h2>
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const GEMINI_URL =
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent";
 
-  <input id="msg" placeholder="Escribe tu comentario" />
-  <button onclick="enviar()">Enviar</button>
-
-  <pre id="log"></pre>
-
-<script>
-async function enviar() {
-  const input = document.getElementById("msg");
-  const texto = input.value;
-  if (!texto) return;
-
-  document.getElementById("log").textContent += "Tú: " + texto + "\\n";
-  input.value = "";
-
-  const res = await fetch("/api/chat", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ message: texto })
-  });
-
-  const data = await res.json();
-  document.getElementById("log").textContent += "IA: " + data.reply + "\\n\\n";
-}
-</script>
-
-</body>
-</html>
-`);
-});
-
-// ===============================
-// API CHAT GEMINI
-// ===============================
+// Endpoint del chatbot
 app.post("/api/chat", async (req, res) => {
-  const { message } = req.body;
-
   try {
-    const response = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=" + GEMINI_API_KEY,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{
-            parts: [{
-              text: \`
-Eres un asistente de salud cardiovascular.
-No diagnostiques ni recetes.
-Mensaje del usuario: "\${message}"
-              \`
-            }]
-          }]
-        })
-      }
-    );
+    const userMessage = req.body.message;
+
+    const systemPrompt = `
+Eres CardioAsistente, un asistente de salud cardiovascular.
+- NO diagnostiques
+- Da información preventiva
+- Recomienda consultar a un médico
+- Máx 4 oraciones
+Mensaje del usuario: ${userMessage}
+`;
+
+    const response = await fetch(`${GEMINI_URL}?key=${GEMINI_API_KEY}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: systemPrompt }] }],
+        generationConfig: { temperature: 0.7, maxOutputTokens: 300 }
+      })
+    });
 
     const data = await response.json();
-    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "No hay respuesta.";
+
+    const reply =
+      data?.candidates?.[0]?.content?.parts?.[0]?.text ||
+      "No pude generar una respuesta en este momento.";
 
     res.json({ reply });
-  } catch (err) {
-    res.status(500).json({ reply: "Error al contactar la IA." });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ reply: "Error del servidor" });
   }
 });
 
-// ===============================
-// START
-// ===============================
-app.listen(PORT, () => {
-  console.log("🫀 CardioAsistente activo en puerto", PORT);
-});
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () =>
+  console.log(`Servidor corriendo en puerto ${PORT}`)
+);
