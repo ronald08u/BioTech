@@ -1,4 +1,13 @@
-const API_URL = 'https://tu-app.onrender.com/api/chat';
+// script.js
+// ANTES: const url = "http://localhost:10000/usuarios";
+// DESPUÉS:
+const url = "https://cardiocare-3wfi.onrender.coms";
+
+async function obtenerDatos() {
+    const res = await fetch(url);
+    const data = await res.json();
+    console.log(data);
+};
 
 const chatMessages = document.getElementById('chatMessages');
 const userInput = document.getElementById('userInput');
@@ -90,3 +99,4 @@ userInput.addEventListener('keypress', (e) => {
         sendMessage();
     }
 });
+
